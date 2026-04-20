@@ -50,7 +50,7 @@ def export_pdf_bytes(text: str) -> bytes:
         except Exception:
             pdf.write(5, "[Error rendering line]\n")
             
-    out = pdf.output(dest="S")
+    out = pdf.output()
     if isinstance(out, (bytes, bytearray)):
         return bytes(out)
     return out.encode("latin-1", errors="replace")
