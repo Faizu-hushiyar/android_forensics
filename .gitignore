@@ -1,0 +1,24 @@
+# Streamlit secrets – never commit these
+.streamlit/secrets.toml
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Database (contains user data; commit only the empty schema version if needed)
+secops.sqlite3
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS artefacts
+.DS_Store
+Thumbs.db
