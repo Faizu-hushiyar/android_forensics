@@ -102,7 +102,7 @@ def social_engineering_score(text: str) -> dict[str, Any]:
     checks = {
         "urgency_language": bool(re.search(r"\b(urgent|immediately|within\s+\d+\s*(hour|minute)|suspend)\b", t)),
         "credential_request": bool(re.search(r"\b(verify\s+your\s+account|confirm\s+password|click\s+here\s+to\s+log)\b", t)),
-        "suspicious_link": bool(re.search(r"https?://[^\s]+[.-](tk|ml|ga|cf|gq|xyz)\b", t)),
+        "suspicious_link": bool(re.search(r"https?://\S{1,200}[.-](?:tk|ml|ga|cf|gq|xyz)\b", t)),
         "mismatched_brand": bool(re.search(r"(paypal|microsoft|google).{0,40}@(?!paypal|microsoft|google)", t)),
         "shortened_url": bool(re.search(r"\b(bit\.ly|tinyurl|t\.co|goo\.gl)/", t)),
     }
@@ -167,6 +167,9 @@ def dkim_dns_lookup(selector: str, domain: str) -> dict[str, Any]:
 
 def traceroute(host: str, max_hops: int = 20) -> dict[str, Any]:
     host = host.strip()
+    # Validate host to prevent command injection: allow only hostnames, IPs, and domains
+    if not re.match(r"^[A-Za-z0-9.\-]+$", host):
+        return {"error": "Invalid host: only alphanumeric characters, dots, and hyphens are allowed"}
     if sys.platform == "win32":
         cmd = ["tracert", "-d", "-h", str(max_hops), host]
     else:
@@ -183,6 +186,7 @@ def traceroute(host: str, max_hops: int = 20) -> dict[str, Any]:
 def fetch_ssl_certificate(host: str, port: int = 443, timeout: float = 5.0) -> dict[str, Any]:
     host = host.strip()
     ctx = ssl.create_default_context()
+    ctx.minimum_version = ssl.TLSVersion.TLSv1_2
     try:
         with socket.create_connection((host, port), timeout=timeout) as sock:
             with ctx.wrap_socket(sock, server_hostname=host) as ssock:

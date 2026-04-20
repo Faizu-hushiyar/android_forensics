@@ -160,6 +160,10 @@ def send_otp(email, otp):
     sender = st.secrets.get("OTP_EMAIL", os.environ.get("OTP_EMAIL", ""))
     password = st.secrets.get("OTP_PASSWORD", os.environ.get("OTP_PASSWORD", ""))
 
+    if not sender or not password:
+        print("Email error: OTP_EMAIL and OTP_PASSWORD are not configured in secrets/env.")
+        return False
+
     msg = MIMEText(f"Your SecureOps OTP is: {otp}")
     msg["Subject"] = "SecureOps OTP Verification"
     msg["From"] = sender
